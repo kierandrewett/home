@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+    traefik:
+        container_name: traefik
+        image: traefik:v3.1
+        restart: unless-stopped
+        command: --api.insecure=true --providers.docker
+        ports:
+            - "80:80"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+
+    pihole:
+        container_name: pihole
+        image: pihole/pihole:latest
+        restart: unless-stopped
+        ports:
+            - "53:53/tcp"
+            - "53:53/udp"
+            - "67:67/udp"
+            - "80:80/tcp"
+        environment:
+            TZ: "Europe/London"
+        volumes:
+            - pihole_data:/etc/pihole
+            - pihole_dnsmasq:/etc/dnsmasq.d
+        cap_add:
+            - NET_ADMIN
+        labels:
+            - traefik.http.routers.pihole.rule=Host(`pihole.home.local`)
+
+    homarr:
+        container_name: homarr
+        image: ghcr.io/ajnart/homarr:latest
+        restart: unless-stopped
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - homarr_config:/app/data/configs
+            - homarr_data:/data
+        labels:
+            - traefik.http.routers.homarr.rule=Host(`home.local`)
+
+volumes:
+    pihole_data:
+    pihole_dnsmasq:
+
+    homarr_config:
+    homarr_data:
