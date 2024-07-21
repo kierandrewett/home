@@ -21,10 +21,10 @@ services:
         environment:
             TZ: "Europe/London"
         volumes:
-            - pihole_data:/etc/pihole
-            - pihole_dnsmasq:/etc/dnsmasq.d
+            - ./data/pihole:/etc/pihole
+            - ./data/pihole_dnsmasq:/etc/dnsmasq.d
         labels:
-            - traefik.http.routers.pihole.rule=Host(`pihole`)
+            - traefik.http.routers.pihole.rule=Host(`pihole.home`)
 
     homarr:
         container_name: homarr
@@ -32,18 +32,13 @@ services:
         restart: unless-stopped
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - homarr_config:/app/data/configs
-            - homarr_data:/data
+            - ./data/homarr/config:/app/data/configs
+            - ./data/homarr/data:/data
         labels:
             - traefik.http.routers.homarr.rule=Host(`home`)
 
 volumes:
-    pihole_data:
-    pihole_dnsmasq:
-
-    homarr_config:
-    homarr_data:
-
+ 
 networks:
     internet:
         external: true
