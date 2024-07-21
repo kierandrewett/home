@@ -37,8 +37,6 @@ services:
         labels:
             - traefik.http.routers.homarr.rule=Host(`home`)
 
-volumes:
- 
 networks:
     internet:
         external: true
